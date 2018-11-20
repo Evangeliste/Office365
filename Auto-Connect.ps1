@@ -42,7 +42,10 @@ ELSE
     Import-Module MSOnline
     Import-Module AzureADPreview
     Import-Module LyncOnlineConnector
-
+    Import-Module MicrosoftTeams
+    
+    $errorActionPreference = "SilentlyContinue"
+    
     $CheckModule = Get-Module
         IF ($CheckModule.name -eq "MSOnline")
             {
@@ -51,6 +54,7 @@ ELSE
         else 
             {
             Write-Host "You do not have MSOnline requiered module installed ! Please make the necesarry" -ForegroundColor Red
+            Write-host "Please refer to https://blogs.technet.microsoft.com/cloudlojik/2018/07/02/how-to-install-the-msonline-powershell-module/ for install this module" -ForegroundColor Red
             Break
             }
 
@@ -61,6 +65,17 @@ ELSE
         else 
             {
             Write-Host "You do not have AzureADPreview requiered module installed ! Please make the necesarry" -ForegroundColor Red
+            Write-host "Please refer to https://www.powershellgallery.com/packages/AzureADPreview for install this module" -ForegroundColor Red
+            Break
+            }
+            IF ($CheckModule.name -eq "MicrosoftTeams")
+            {
+            Write-Host "Module MicrosoftTeams is OK ! Check next module" -ForegroundColor Green
+            }
+        else 
+            {
+            Write-Host "You do not have MicrosoftTeams requiered module installed ! Please make the necesarry" -ForegroundColor Red
+            Write-host "Please refer to https://www.powershellgallery.com/packages/MicrosoftTeams for install this module" -ForegroundColor Red
             Break
             }
 
@@ -74,18 +89,20 @@ ELSE
     #########################################################################################################################
 
     #Save your credential to an XML file : Get-Credential | Export-Clixml -Path C:\_Labs\_MyCred\YourCred.xml
-    #$TenantCredentials = Import-Clixml "C:\_Labs\_MyCred\Demo.xml"
     $TenantCredentials = Import-Clixml $MyCred
 
     #Connect to O365 Tenant
     #$TenantCredentials = Get-Credential
     $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $TenantCredentials -Authentication Basic -AllowRedirection
     Import-PSSession $Session
-    Connect-MsolService -Credential $TenantCredentials
-    Connect-AzureAD -Credential $TenantCredentials
 
     $CSSession = New-CsOnlineSession -Credential $TenantCredentials
     Import-PSSession $CSSession
+
+    $TenantCredentials = Import-Clixml $MyCred
+    Connect-MsolService -Credential $TenantCredentials
+    Connect-AzureAD -Credential $TenantCredentials
+    Connect-MicrosoftTeams -Credential $TenantCredentials
 
     $DomainTenant = ""
     $DomainTenant = ((Get-MsolDomain | Where-Object {$_.Name -like "*onmicrosoft.com" -and $_.Name -notlike "*mail.onmicrosoft.com"}).Name).replace(".onmicrosoft.com","")
