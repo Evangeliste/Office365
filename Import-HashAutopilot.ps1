@@ -12,7 +12,7 @@
 #########################################################################################################################
 <#
   .DESCRIPTION
-    This script generate the list view of site for ACTED or import the Hardware Hash to Windows Autopilot
+    This script help you to upload the Hardware Hash to Windows Autopilot
 
 
   .EXAMPLE
